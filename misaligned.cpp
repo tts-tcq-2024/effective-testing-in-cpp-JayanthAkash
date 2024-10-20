@@ -13,7 +13,7 @@ auto getConsoleOutputDecorator(Func f) {
         std::cout.rdbuf(oss.rdbuf());
 
         // Execute the function
-        auto result = f(std::forward<decltype(args)>(args)...);
+        f(std::forward<decltype(args)>(args)...);
 
         // Restore std::cout back to normal
         std::cout.rdbuf(oldCoutStreamBuf);
@@ -68,7 +68,7 @@ int main() {
     auto decoratedPrintColorMap = getConsoleOutputDecorator(printColorMap);
     auto buffer = decoratedPrintColorMap();
     assert(buffer == expectedConsoleBuffer);
-    
+
     std::cout << "All is well (maybe!)\n";
     return 0;
 }
