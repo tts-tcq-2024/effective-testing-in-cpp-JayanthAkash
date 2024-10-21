@@ -33,7 +33,7 @@ int printColorMap(void(*fp)(std::string)) {
     int i = 0, j = 0;
     for(i = 0; i < 5; i++) {
         for(j = 0; j < 5; j++) {
-            fp(to_string(i * 5 + j ) + " | " + majorColor[i] + " | " + minorColor[i] + "\n");
+            fp(std::to_string(i * 5 + j ) + " | " + majorColor[i] + " | " + minorColor[i] + "\n");
         }
     }
     return i * j;
