@@ -3,40 +3,51 @@
 #include <sstream>
 #include <string>
 
-template <typename Func>
-auto getConsoleOutputDecorator(Func f) {
-    return [f](auto&&... args) -> decltype(auto) {
-        std::ostringstream oss;  // Create a string stream to capture output
+// template <typename Func>
+// auto getConsoleOutputDecorator(Func f) {
+//     return [f](auto&&... args) -> decltype(auto) {
+//         std::ostringstream oss;  // Create a string stream to capture output
 
-        // Redirect std::cout to oss
-        std::streambuf* oldCoutStreamBuf = std::cout.rdbuf();
-        std::cout.rdbuf(oss.rdbuf());
+//         // Redirect std::cout to oss
+//         std::streambuf* oldCoutStreamBuf = std::cout.rdbuf();
+//         std::cout.rdbuf(oss.rdbuf());
 
-        // Execute the function
-        f(std::forward<decltype(args)>(args)...);
+//         // Execute the function
+//         f(std::forward<decltype(args)>(args)...);
 
-        // Restore std::cout back to normal
-        std::cout.rdbuf(oldCoutStreamBuf);
+//         // Restore std::cout back to normal
+//         std::cout.rdbuf(oldCoutStreamBuf);
 
-        // Return the captured output as a string
-        return oss.str();
-    };
+//         // Return the captured output as a string
+//         return oss.str();
+//     };
+// }
+
+void printOnConsole(std::string manualItem){
+    std::cout << manualItem;
 }
 
-int printColorMap() {
+int printColorMap(void(*fp)(std::string)) {
     const char* majorColor[] = {"White", "Red", "Black", "Yellow", "Violet"};
     const char* minorColor[] = {"Blue", "Orange", "Green", "Brown", "Slate"};
     int i = 0, j = 0;
     for(i = 0; i < 5; i++) {
         for(j = 0; j < 5; j++) {
-            std::cout << i * 5 + j << " | " << majorColor[i] << " | " << minorColor[i] << "\n";
+            fp(to_string(i * 5 + j ) + " | " + majorColor[i] + " | " + minorColor[i] + "\n");
         }
     }
     return i * j;
 }
+std::string actualManual;
+
+// Test environment 
+void mockPrintOnConsole(std::string manualItem)
+{
+    actualManual += manualItem;
+}
 
 int main() {
-    int result = printColorMap();
+    int result = printColorMap(&mockPrintOnConsole);
     assert(result == 25);
 
     const std::string expectedConsoleBuffer =
@@ -65,9 +76,9 @@ int main() {
         "22 | Violet | Green\n"
         "23 | Violet | Brown\n"
         "24 | Violet | Slate\n";
-    auto decoratedPrintColorMap = getConsoleOutputDecorator(printColorMap);
-    auto buffer = decoratedPrintColorMap();
-    assert(buffer == expectedConsoleBuffer);
+    //auto decoratedPrintColorMap = getConsoleOutputDecorator(printColorMap);
+    //auto buffer = decoratedPrintColorMap();
+    assert(actualManual == expectedConsoleBuffer);
 
     std::cout << "All is well (maybe!)\n";
     return 0;
